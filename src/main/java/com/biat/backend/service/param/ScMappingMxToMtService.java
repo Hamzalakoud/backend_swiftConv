@@ -1,7 +1,8 @@
-package com.biat.backend.service;
+package com.biat.backend.service.param;
 
-import com.biat.backend.model.ScMappingMxToMt;
-import com.biat.backend.repository.ScMappingMxToMtRepository;
+import com.biat.backend.model.param.ScMappingMxToMt;
+import com.biat.backend.repository.param.ScMappingMxToMtRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

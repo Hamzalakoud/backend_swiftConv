@@ -18,7 +18,7 @@ public class ScMxFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "DETECT_FILE")
+    @Column(name = "detect_id")
     private Long detectFile;
 
     private String filename;
@@ -33,14 +33,11 @@ public class ScMxFile {
     private String tag71A;
 
     @Lob
-    @Column(name = "MSG_ORIG")  // <-- Correctly map this to the DB column MSG_ORIG
     @JsonIgnore  // Prevent raw Clob from being serialized
     private Clob msgOrig;
 
-    @Column(name = "CREATED_AT")
     private LocalDateTime createdAt;
 
-    @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
     // Transient getter to expose Clob content as String in JSON

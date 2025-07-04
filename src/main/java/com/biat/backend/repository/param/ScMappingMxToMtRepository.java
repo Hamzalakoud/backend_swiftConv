@@ -1,8 +1,9 @@
-package com.biat.backend.repository;
+package com.biat.backend.repository.param;
 
-import com.biat.backend.model.ScMappingMxToMt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.biat.backend.model.param.ScMappingMxToMt;
 
 @Repository
 public interface ScMappingMxToMtRepository extends JpaRepository<ScMappingMxToMt, Long> {

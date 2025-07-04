@@ -18,7 +18,7 @@ public class ScMtFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "DETECT_FILE")
+    @Column(name = "detect_id")
     private Long detectFile;
 
     private String filename;

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "SC_NS_MT_DETAILS")
+@Table(name = "NS_MT_DETAILS")
 @Data
 public class ScNsMtDetails {
 
@@ -12,13 +12,15 @@ public class ScNsMtDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "SC_NS_MT")
+    @Column(name = "file_id")
     private Long scNsMt; // FK to SC_NS_MT.id
 
+    @Column(name = "element_name")
     private String tag;
 
-    @Column(name = "value")
+    @Column(name = "element_value")
     private String value;
 
+    @Column(name = "order_Tag")
     private Integer ordre;
 }

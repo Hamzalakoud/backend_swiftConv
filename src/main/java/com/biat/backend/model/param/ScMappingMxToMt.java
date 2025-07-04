@@ -1,4 +1,4 @@
-package com.biat.backend.model;
+package com.biat.backend.model.param;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "SC_MAPPING_MX_TO_MT")
+@Table(name = "SC_MAPPING")
 public class ScMappingMxToMt {
 
     @Id

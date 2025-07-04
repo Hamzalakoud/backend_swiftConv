@@ -18,6 +18,7 @@ public class ScConversion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "detect_id")
     private Long detectId;
 
     private String filename;
@@ -33,7 +34,7 @@ public class ScConversion {
 
     @Lob
     @JsonIgnore
-    @Column(name = "MSG_ORIG_MT")  // 👈 Ensures column name matches database
+    @Column(name = "Mt_ORIG_MSG")  // 👈 Ensures column name matches database
     private Clob msgOrigMT;
 
     @Lob

@@ -13,13 +13,15 @@ public class ScMtDetails {
     private Long id;
 
     // Foreign key reference to SC_MT
-    @Column(name = "SC_MT")
+    @Column(name = "file_id")
     private Long scMt; // FK to SC_MT.id
 
+    @Column(name = "element_name")
     private String tag;
 
-    @Column(name = "value")
+    @Column(name = "element_value")
     private String value;
 
+    @Column(name = "order_tag")
     private Integer ordre;
 }

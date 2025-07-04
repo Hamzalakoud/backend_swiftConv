@@ -1,6 +1,6 @@
 package com.biat.backend.controller.MT;
 
-import com.biat.backend.model.MT.ScNsMt;
+import com.biat.backend.model.MT.Ns_Mt_File;
 import com.biat.backend.service.MT.ScNsMtService;
 
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ public class ScNsMtController {
     private final ScNsMtService service;
 
     @GetMapping
-    public List<ScNsMt> getAll() {
+    public List<Ns_Mt_File> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public ScNsMt getById(@PathVariable Long id) {
+    public Ns_Mt_File getById(@PathVariable Long id) {
         return service.getById(id);
     }
 }

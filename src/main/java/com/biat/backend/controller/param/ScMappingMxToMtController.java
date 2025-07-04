@@ -1,7 +1,8 @@
-package com.biat.backend.controller;
+package com.biat.backend.controller.param;
 
-import com.biat.backend.model.ScMappingMtToMx;
-import com.biat.backend.service.ScMappingMtToMxService;
+import com.biat.backend.model.param.ScMappingMxToMt;
+import com.biat.backend.service.param.ScMappingMxToMtService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,22 +10,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/sc-mapping-mt-to-mx")
+@RequestMapping("/api/sc-mapping-mx-to-mt")
 @RequiredArgsConstructor
-public class ScMappingMtToMxController {
+public class ScMappingMxToMtController {
 
-    private final ScMappingMtToMxService service;
+    private final ScMappingMxToMtService service;
 
     @GetMapping
-    public ResponseEntity<List<ScMappingMtToMx>> getAll() {
-        List<ScMappingMtToMx> list = service.getAll();
+    public ResponseEntity<List<ScMappingMxToMt>> getAll() {
+        List<ScMappingMxToMt> list = service.getAll();
         return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ScMappingMtToMx> getById(@PathVariable Long id) {
+    public ResponseEntity<ScMappingMxToMt> getById(@PathVariable Long id) {
         try {
-            ScMappingMtToMx entity = service.getById(id);
+            ScMappingMxToMt entity = service.getById(id);
             return ResponseEntity.ok(entity);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
@@ -32,15 +33,15 @@ public class ScMappingMtToMxController {
     }
 
     @PostMapping
-    public ResponseEntity<ScMappingMtToMx> create(@RequestBody ScMappingMtToMx entity) {
-        ScMappingMtToMx saved = service.create(entity);
+    public ResponseEntity<ScMappingMxToMt> create(@RequestBody ScMappingMxToMt entity) {
+        ScMappingMxToMt saved = service.create(entity);
         return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ScMappingMtToMx> update(@PathVariable Long id, @RequestBody ScMappingMtToMx entity) {
+    public ResponseEntity<ScMappingMxToMt> update(@PathVariable Long id, @RequestBody ScMappingMxToMt entity) {
         try {
-            ScMappingMtToMx updated = service.update(id, entity);
+            ScMappingMxToMt updated = service.update(id, entity);
             return ResponseEntity.ok(updated);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

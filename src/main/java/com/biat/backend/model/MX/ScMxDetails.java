@@ -12,7 +12,7 @@ public class ScMxDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "SC_MX_id")
+    @Column(name = "file_id")
     private Long scMxId;
 
     @Column(name = "parent_id")
@@ -27,5 +27,6 @@ public class ScMxDetails {
     @Column(name = "order_index")
     private Integer orderIndex;
 
+    @Column(name = "depth")
     private Integer profondeur;
 }

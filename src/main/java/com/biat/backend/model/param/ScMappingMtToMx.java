@@ -1,4 +1,4 @@
-package com.biat.backend.model;
+package com.biat.backend.model.param;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
