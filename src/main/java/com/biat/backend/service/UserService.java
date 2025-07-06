@@ -57,9 +57,14 @@ public class UserService {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            System.out.println("emailFromToken: " + emailFromToken);
+            System.out.println("roleFromToken: " + roleFromToken);
+            System.out.println("user.getEmail(): " + user.getEmail());
+
             // Authorization: allow if same user OR admin
             if (!user.getEmail().equals(emailFromToken) && !"admin".equalsIgnoreCase(roleFromToken)) {
                 throw new RuntimeException("Unauthorized to update this user");
+                
             }
 
             if (request.getFirstname() != null) user.setFirstname(request.getFirstname());

@@ -31,6 +31,10 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid password");
         }
 
+        if (!user.getStatus()) {
+            throw new RuntimeException("User account is inactive");
+        }
+
         String token = jwtService.generateToken(user);
         return new AuthResponse(token, user.getEmail(), user.getRole());
     }
