@@ -2,12 +2,13 @@ package com.biat.backend.repository.param;
 
 import com.biat.backend.model.param.ScConversion;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ScConversionRepository extends JpaRepository<ScConversion, Long> {
+public interface ScConversionRepository extends JpaRepository<ScConversion, Long>, JpaSpecificationExecutor<ScConversion> {
 
     List<ScConversion> findByCurrency(String currency);
 

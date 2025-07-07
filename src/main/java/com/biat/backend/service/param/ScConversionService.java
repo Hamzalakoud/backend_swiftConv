@@ -2,9 +2,13 @@ package com.biat.backend.service.param;
 
 import com.biat.backend.model.param.ScConversion;
 import com.biat.backend.repository.param.ScConversionRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,100 +22,84 @@ public class ScConversionService {
                 .orElseThrow(() -> new RuntimeException("Conversion record not found with id: " + id));
     }
 
-    public List<ScConversion> getByFilename(String filename) {
-        List<ScConversion> files = repository.findByFilename(filename);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with filename: " + filename);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByMsgCateg(String msgCateg) {
-        List<ScConversion> files = repository.findByMsgCateg(msgCateg);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with msgCateg: " + msgCateg);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByMsgType(String msgType) {
-        List<ScConversion> files = repository.findByMsgType(msgType);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with msgType: " + msgType);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByBicEm(String bicEm) {
-        List<ScConversion> files = repository.findByBicEm(bicEm);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with BIC Em: " + bicEm);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByBicDe(String bicDe) {
-        List<ScConversion> files = repository.findByBicDe(bicDe);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with BIC De: " + bicDe);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByCurrency(String currency) {
-        List<ScConversion> files = repository.findByCurrency(currency);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with currency: " + currency);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByCustomerAccount(String account) {
-        List<ScConversion> files = repository.findByCustomerAccount(account);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with account: " + account);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByTag71A(String tag71A) {
-        List<ScConversion> files = repository.findByTag71A(tag71A);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with tag71A: " + tag71A);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByStatus(String status) {
-        List<ScConversion> files = repository.findByStatus(status);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with status: " + status);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getBySens(String sens) {
-        List<ScConversion> files = repository.findBySens(sens);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with sens: " + sens);
-        }
-        return files;
-    }
-
-    public List<ScConversion> getByToConvert(String toConvert) {
-        List<ScConversion> files = repository.findByToConvert(toConvert);
-        if (files.isEmpty()) {
-            throw new RuntimeException("No records found with toConvert: " + toConvert);
-        }
-        return files;
-    }
-
     public List<ScConversion> getAll() {
         return repository.findAll();
     }
 
     public long countMessages() {
-    return repository.count();
-}
+        return repository.count();
+    }
 
+    public List<ScConversion> getFiltered(
+            String filename,
+            String msgCateg,
+            String msgType,
+            String bicEm,
+            String bicDe,
+            String uertr,
+            Double amount,
+            String currency,
+            String customerAccount,
+            String tag71A,
+            String status,
+            String sens,
+            String toConvert,
+            String creationDate
+    ) {
+        Specification<ScConversion> spec = (root, query, builder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (filename != null && !filename.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("filename")), "%" + filename.toLowerCase() + "%"));
+
+            if (msgCateg != null && !msgCateg.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("msgCateg")), "%" + msgCateg.toLowerCase() + "%"));
+
+            if (msgType != null && !msgType.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("msgType")), "%" + msgType.toLowerCase() + "%"));
+
+            if (bicEm != null && !bicEm.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("bicEm")), "%" + bicEm.toLowerCase() + "%"));
+
+            if (bicDe != null && !bicDe.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("bicDe")), "%" + bicDe.toLowerCase() + "%"));
+
+            if (uertr != null && !uertr.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("uertr")), "%" + uertr.toLowerCase() + "%"));
+
+            if (amount != null)
+                predicates.add(builder.equal(root.get("amount"), amount));
+
+            if (currency != null && !currency.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("currency")), "%" + currency.toLowerCase() + "%"));
+
+            if (customerAccount != null && !customerAccount.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("customerAccount")), "%" + customerAccount.toLowerCase() + "%"));
+
+            if (tag71A != null && !tag71A.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("tag71A")), "%" + tag71A.toLowerCase() + "%"));
+
+            if (status != null && !status.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("status")), "%" + status.toLowerCase() + "%"));
+
+            if (sens != null && !sens.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("sens")), "%" + sens.toLowerCase() + "%"));
+
+            if (toConvert != null && !toConvert.isEmpty())
+                predicates.add(builder.like(builder.lower(root.get("toConvert")), "%" + toConvert.toLowerCase() + "%"));
+
+            if (creationDate != null && !creationDate.isEmpty()) {
+                try {
+                    LocalDate date = LocalDate.parse(creationDate);
+                    predicates.add(builder.equal(root.get("creationDate"), date));
+                } catch (Exception e) {
+                    // invalid date, ignore
+                }
+            }
+
+            return builder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return repository.findAll(spec);
+    }
 }
