@@ -46,11 +46,18 @@ public class ScConversionService {
             String toConvert,
             String creationDate
     ) {
+        System.out.println("Filtering by filename: " + filename);
+
         Specification<ScConversion> spec = (root, query, builder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (filename != null && !filename.isEmpty())
-                predicates.add(builder.like(builder.lower(root.get("filename")), "%" + filename.toLowerCase() + "%"));
+            if (filename != null && !filename.isEmpty()) {
+                String baseName = filename.toLowerCase().split("\\.")[0];
+                System.out.println("Base filename extracted: " + baseName);
+                Predicate startsWithBase = builder.like(builder.lower(root.get("filename")), baseName + ".%");
+                Predicate equalsBase = builder.equal(builder.lower(root.get("filename")), baseName);
+                predicates.add(builder.or(startsWithBase, equalsBase));
+            }
 
             if (msgCateg != null && !msgCateg.isEmpty())
                 predicates.add(builder.like(builder.lower(root.get("msgCateg")), "%" + msgCateg.toLowerCase() + "%"));

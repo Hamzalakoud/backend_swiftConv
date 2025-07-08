@@ -33,18 +33,18 @@ public class ScConversionController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Filtered GET with query params
+    // Filtered GET with enhanced filename logic
     @GetMapping("/filtered")
     public ResponseEntity<List<ScConversion>> getFiltered(@RequestParam Map<String, String> params) {
         List<ScConversion> all = repository.findAll();
 
         List<ScConversion> filtered = all.stream()
-            .filter(sc -> filterMatch(sc.getFilename(), params.get("filename")))
-            .filter(sc -> filterMatch(sc.getMsgCateg(), params.get("msgCateg")))
-            .filter(sc -> filterMatch(sc.getMsgType(), params.get("msgType")))
-            .filter(sc -> filterMatch(sc.getBicEm(), params.get("bicEm")))
-            .filter(sc -> filterMatch(sc.getBicDe(), params.get("bicDe")))
-            .filter(sc -> filterMatch(sc.getUertr(), params.get("uertr")))
+            .filter(sc -> filenameMatches(sc.getFilename(), params.get("filename")))
+            .filter(sc -> startsWithMatch(sc.getMsgCateg(), params.get("msgCateg")))
+            .filter(sc -> startsWithMatch(sc.getMsgType(), params.get("msgType")))
+            .filter(sc -> startsWithMatch(sc.getBicEm(), params.get("bicEm")))
+            .filter(sc -> startsWithMatch(sc.getBicDe(), params.get("bicDe")))
+            .filter(sc -> startsWithMatch(sc.getUertr(), params.get("uertr")))
             .filter(sc -> {
                 String amountStr = params.get("amount");
                 if (amountStr == null || amountStr.isEmpty()) return true;
@@ -55,12 +55,12 @@ public class ScConversionController {
                     return true;
                 }
             })
-            .filter(sc -> filterMatch(sc.getCurrency(), params.get("currency")))
-            .filter(sc -> filterMatch(sc.getCustomerAccount(), params.get("customerAccount")))
-            .filter(sc -> filterMatch(sc.getTag71A(), params.get("tag71A")))
-            .filter(sc -> filterMatch(sc.getStatus(), params.get("status")))
-            .filter(sc -> filterMatch(sc.getSens(), params.get("sens")))
-            .filter(sc -> filterMatch(sc.getToConvert(), params.get("toConvert")))
+            .filter(sc -> startsWithMatch(sc.getCurrency(), params.get("currency")))
+            .filter(sc -> startsWithMatch(sc.getCustomerAccount(), params.get("customerAccount")))
+            .filter(sc -> startsWithMatch(sc.getTag71A(), params.get("tag71A")))
+            .filter(sc -> startsWithMatch(sc.getStatus(), params.get("status")))
+            .filter(sc -> startsWithMatch(sc.getSens(), params.get("sens")))
+            .filter(sc -> startsWithMatch(sc.getToConvert(), params.get("toConvert")))
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(filtered);
@@ -76,7 +76,39 @@ public class ScConversionController {
         return fieldValue.equalsIgnoreCase(filterValue);
     }
 
-    // Other field-specific GETs omitted here for brevity (keep as in your code)...
+    // Enhanced filename match: if filter is "file66" 
+    // match filename exactly "file66" OR filename starting with "file66."
+    private boolean filenameMatches(String filename, String filter) {
+        if (filter == null || filter.isEmpty()) {
+            return true;
+        }
+        if (filename == null || filename.isEmpty()) {
+            return false;
+        }
+
+        String filterLower = filter.toLowerCase().replaceAll("\\.*$", ""); // remove trailing dots
+        String filenameLower = filename.toLowerCase();
+
+        // Instead of exact match or exact + ".", use startsWith filterLower
+        return filenameLower.startsWith(filterLower);
+    }
+
+    private boolean startsWithMatch(String fieldValue, String filterValue) {
+        if (filterValue == null || filterValue.isEmpty()) {
+            return true; // no filter => accept all
+        }
+        if (fieldValue == null || fieldValue.isEmpty()) {
+            return false; // field empty but filter not
+        }
+
+        // Normalize by trimming and lowercase comparison
+        String filterLower = filterValue.toLowerCase().trim();
+        String fieldLower = fieldValue.toLowerCase().trim();
+
+        // Check if field starts with filter string
+        return fieldLower.startsWith(filterLower);
+    }
+
 
     @GetMapping("/count")
     public ResponseEntity<Long> countMessages() {
@@ -87,7 +119,6 @@ public class ScConversionController {
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Object>> getDashboardStats() {
         LocalDate today = LocalDate.now();
-        // Assuming creationDate is LocalDateTime; adjust if needed
         LocalDate startOfWeek = today.minusDays(today.getDayOfWeek().getValue() - 1);
 
         List<ScConversion> all = repository.findAll();
