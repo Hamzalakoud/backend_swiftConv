@@ -34,12 +34,12 @@ public class ScConversion {
 
     @Lob
     @JsonIgnore
-    @Column(name = "Mt_ORIG_MSG")  // 👈 Ensures column name matches database
+    @Column(name = "MT_ORIG_MSG")  // 👈 Ensures column name matches database
     private Clob msgOrigMT;
 
     @Lob
     @JsonIgnore
-    @Column(name = "MSG_ORIG_MX")  // 👈 Ensures column name matches database
+    @Column(name = "MX_MSG_ORIG")  // 👈 Ensures column name matches database
     private Clob msgOrigMX;
 
     private String status; // FAILED/CONVERTED/NC
