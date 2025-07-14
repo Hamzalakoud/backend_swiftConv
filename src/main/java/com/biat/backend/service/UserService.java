@@ -8,6 +8,7 @@ import com.biat.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,10 +41,10 @@ public class UserService {
         }
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
+
 
     public AuthResponse updateUser(Long id, RegisterRequest request, String token) {
         try {
@@ -118,7 +119,18 @@ public class UserService {
                 .getId();
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers(String token) {
+        if (!jwtService.isTokenValid(token)) {
+            throw new RuntimeException("Invalid or expired token");
+        }
+
+        // Optionally, extract role or user info from token for authorization
+        String roleFromToken = jwtService.extractRole(token);
+        if (!"admin".equalsIgnoreCase(roleFromToken)) {
+            throw new RuntimeException("Unauthorized access: only admins can get all users");
+        }
+
         return userRepository.findAll();
     }
+
 }

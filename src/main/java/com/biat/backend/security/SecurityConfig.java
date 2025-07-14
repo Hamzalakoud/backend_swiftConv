@@ -10,12 +10,17 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true)
@@ -28,21 +33,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // Configure CORS globally
             .cors(cors -> cors.configurationSource(request -> {
-                var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                corsConfig.setAllowedOrigins(java.util.List.of("http://localhost:4200")); // Angular app URL
-                corsConfig.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                corsConfig.setAllowedHeaders(java.util.List.of("*"));
+                CorsConfiguration corsConfig = new CorsConfiguration();
+                corsConfig.setAllowedOrigins(List.of(
+                    "http://localhost:4200",
+                    "http://127.0.0.1:8081",
+                    "http://localhost:8081"
+                ));
+                corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                corsConfig.setAllowedHeaders(List.of("*"));
                 corsConfig.setAllowCredentials(true);
                 return corsConfig;
             }))
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .csrf(AbstractHttpConfigurer::disable) // Disable CSRF for APIs
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless for JWT
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints (auth, registration)
+                // Public endpoints
                 .requestMatchers("/api/auth/**", "/api/users/register").permitAll()
 
-                // Full CRUD (authenticated) tables
+                // CRUD endpoints (authenticated users)
                 .requestMatchers(HttpMethod.GET, "/api/sc-detectfile/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/sc-detectfile").authenticated()
                 .requestMatchers(HttpMethod.PUT, "/api/sc-detectfile/**").authenticated()
@@ -73,7 +83,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/sc-mapping-directory/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/sc-mapping-directory/**").authenticated()
 
-                // Read-only (GET only) tables
+                // Read-only endpoints
                 .requestMatchers(HttpMethod.GET, "/api/sc-mt-file/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/sc-mt-details/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/sc-ns-mt/**").authenticated()
@@ -86,24 +96,34 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/sc-rdl/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/sc-conversion/**").authenticated()
 
-                // User endpoints
+                // User management endpoints
                 .requestMatchers(HttpMethod.PUT, "/api/users/update/**").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/users/delete/**").authenticated()
-                //.requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/users/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/users/**").authenticated()
 
-
-
-                // Admin-only access
+                // Admin-only endpoints
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                // All other requests authenticated
+                // All other requests require authentication
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // Ignore static resources for security
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(
+            "/assets/**",
+            "/css/**",
+            "/js/**",
+            "/fonts/**",
+            "/favicon.ico",
+            "/index.html"
+        );
     }
 
     @Bean

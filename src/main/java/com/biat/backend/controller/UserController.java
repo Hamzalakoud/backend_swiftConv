@@ -18,6 +18,21 @@ public class UserController {
 
     private final UserService userService;
 
+    // Helper method to extract token
+    private String extractToken(String authHeader) {
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.substring(7);
+        }
+        return authHeader;
+    }
+
+    // Updated method requiring Authorization header and passing token
+    @GetMapping
+    public List<User> getAllUsers(@RequestHeader("Authorization") String authHeader) {
+        String token = extractToken(authHeader);
+        return userService.getAllUsers(token);
+    }
+
     @PostMapping("/register")
     public String register(@RequestBody RegisterRequest request) {
         return userService.register(request);
@@ -28,13 +43,10 @@ public class UserController {
         return userService.getUserIdByEmail(email);
     }
 
-     @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
-        return userService.getAllUsers()
-                .stream()
-                .filter(user -> user.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        return userService.getUserById(id)
+            .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @PutMapping("/update/{id}")
@@ -56,17 +68,4 @@ public class UserController {
         return userService.deleteUser(id, token);
     }
 
-
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    // Helper method to extract JWT token
-    private String extractToken(String authHeader) {
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            return authHeader.substring(7);
-        }
-        return authHeader;
-    }
 }
